@@ -1,8 +1,32 @@
 import { useState } from 'react'
+import { loginUser } from '../services/api'
 
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!email || !password) {
+      setError('Please fill in both email and password.')
+      return
+    }
+
+    setError('')
+    setLoading(true)
+
+    try {
+      const data = await loginUser(email, password)
+      console.log('Login success:', data)
+    } catch (err) {
+      setError('Invalid email or password. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="flex items-center justify-center py-20 px-4">
@@ -11,7 +35,13 @@ function Login() {
           Login to PhantomShield Banking
         </h2>
 
-        <form className="flex flex-col gap-4">
+        {error && (
+          <div className="bg-red-100 text-red-700 text-sm rounded-lg px-4 py-2 mb-4">
+            {error}
+          </div>
+        )}
+
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
@@ -40,9 +70,10 @@ function Login() {
 
           <button
             type="submit"
-            className="bg-brand text-white py-2 rounded-lg hover:opacity-90 transition mt-2"
+            disabled={loading}
+            className="bg-brand text-white py-2 rounded-lg hover:opacity-90 transition mt-2 disabled:opacity-50"
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </div>
