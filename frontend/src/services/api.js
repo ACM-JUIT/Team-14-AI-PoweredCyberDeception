@@ -9,4 +9,9 @@ export const loginUser = async (email, password) => {
   return response.data
 }
 
+export const getDashboardData = async () => {
+  const response = await API.get('/api/dashboard')
+  return response.data
+}
+
 export default API
