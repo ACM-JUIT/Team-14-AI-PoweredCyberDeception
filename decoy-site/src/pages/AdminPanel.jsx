@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { logAction } from "../utils/logger";
+import { trackAction } from "../utils/behaviorTracker";
 
 function AdminPanel() {
   useEffect(() => {
     logAction("VISITED_ADMIN_PANEL");
+    trackAction("page_visit", { page: "admin" });
   }, []);
 
   return (
@@ -23,25 +25,37 @@ function AdminPanel() {
             </h2>
             <div className="flex flex-col gap-3">
               <button
-                onClick={() => logAction("CLICKED_VIEW_ALL_PASSWORDS")}
+                onClick={() => {
+                  logAction("CLICKED_VIEW_ALL_PASSWORDS");
+                  trackAction("clicked_admin_button", { action: "view_passwords" });
+                }}
                 className="bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 text-left"
               >
                 🔑 View All Passwords
               </button>
               <button
-                onClick={() => logAction("CLICKED_EXPORT_USER_DATA")}
+                onClick={() => {
+                  logAction("CLICKED_EXPORT_USER_DATA");
+                  trackAction("clicked_admin_button", { action: "export_data" });
+                }}
                 className="bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 text-left"
               >
                 📤 Export User Data
               </button>
               <button
-                onClick={() => logAction("CLICKED_VIEW_TRANSACTIONS")}
+                onClick={() => {
+                  logAction("CLICKED_VIEW_TRANSACTIONS");
+                  trackAction("clicked_admin_button", { action: "view_transactions" });
+                }}
                 className="bg-orange-500 text-white px-4 py-3 rounded-lg hover:bg-orange-600 text-left"
               >
                 💳 View All Transactions
               </button>
               <button
-                onClick={() => logAction("CLICKED_BACKUP_DATABASE")}
+                onClick={() => {
+                  logAction("CLICKED_BACKUP_DATABASE");
+                  trackAction("clicked_admin_button", { action: "backup_database" });
+                }}
                 className="bg-orange-500 text-white px-4 py-3 rounded-lg hover:bg-orange-600 text-left"
               >
                 🗄️ Backup Database
