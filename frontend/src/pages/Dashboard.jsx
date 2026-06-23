@@ -3,6 +3,7 @@ import Sidebar from '../components/Sidebar'
 import DashboardNavbar from '../components/DashboardNavbar'
 import AccountBalanceCard from '../components/AccountBalanceCard'
 import TransactionsCard from '../components/TransactionsCard'
+import LoadingSpinner from '../components/LoadingSpinner'
 import { getDashboardData } from '../services/api'
 
 function Dashboard() {
@@ -28,18 +29,22 @@ function Dashboard() {
   }, [])
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
         <DashboardNavbar />
-        <main className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {loading && <p className="text-gray-500">Loading dashboard...</p>}
-          {error && <p className="text-red-500">{error}</p>}
+        <main className="p-4 sm:p-6 flex-1 bg-gray-50">
+          {loading && <LoadingSpinner />}
+          {error && (
+            <div className="bg-red-100 text-red-600 rounded-lg px-4 py-3">
+              {error}
+            </div>
+          )}
           {!loading && !error && (
-            <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <AccountBalanceCard data={accountData} />
               <TransactionsCard data={transactions} />
-            </>
+            </div>
           )}
         </main>
       </div>
