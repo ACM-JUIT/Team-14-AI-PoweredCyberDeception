@@ -34,3 +34,12 @@ npm start
 ## Member
 Member 4 — Decoy Website
 Branch: feature/decoy-project-setup
+
+## Week 2 Summary
+- Login page redesigned to match Member 3's real frontend structure
+- Login always succeeds (no real authentication) to keep attacker engaged
+- Dashboard layout updated with SUPER ADMIN badge and exaggerated fake data
+- Created behaviorTracker.js with trackAction(), getActionLog(), clearActionLog()
+- Connected tracking to Navbar, Login, Dashboard, AdminPanel, and UserList
+- Added trackerDebug.js helper to print/reset logs for demo purposes
+- Restored UserList and Transactions pages that were missing on this branch
