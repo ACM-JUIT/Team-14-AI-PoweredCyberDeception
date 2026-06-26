@@ -1,4 +1,8 @@
+import { useNavigate } from 'react-router-dom'
+
 function Home() {
+  const navigate = useNavigate()
+
   return (
     <div className="text-center py-12 px-4 sm:py-20">
       <div className="mb-6">
@@ -15,7 +19,10 @@ function Home() {
       </p>
 
       <div className="flex flex-col sm:flex-row justify-center gap-4">
-        <button className="bg-brand text-white px-6 py-3 rounded-lg hover:opacity-90 transition">
+        <button
+          onClick={() => navigate('/login')}
+          className="bg-brand text-white px-6 py-3 rounded-lg hover:opacity-90 transition"
+        >
           Login
         </button>
         <button className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition">
