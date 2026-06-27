@@ -9,6 +9,7 @@ async def connect_to_mongo():
     global client, database
 
     client = AsyncIOMotorClient(settings.MONGO_URI)
+    database = client["cyberdeception"]
 
     print("MongoDB connected")
 
@@ -20,4 +21,3 @@ async def close_mongo_connection():
         client.close()
 
     print("MongoDB disconnected")
-
