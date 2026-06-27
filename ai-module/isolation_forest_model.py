@@ -45,3 +45,8 @@ joblib.dump(model, "isolation_forest_model.pkl")
 # Load the saved model to verify that it was stored correctly
 loaded_model = joblib.load("isolation_forest_model.pkl")
 print(loaded_model)
+models_dir = os.path.join(base_dir, "models")
+os.makedirs(models_dir, exist_ok=True)
+
+model_path = os.path.join(models_dir, "isolation_forest_model.pkl")
+joblib.dump(model, model_path)
