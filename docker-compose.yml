@@ -1,0 +1,158 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────
+#  PhantomShield — docker-compose.yml
+#  Run everything:  docker compose up --build
+#  Stop everything: docker compose down
+#  Wipe volumes:    docker compose down -v
+# ─────────────────────────────────────────────────────────────
+
+services:
+
+  # ── 1. MongoDB ─────────────────────────────────────────────
+  mongodb:
+    image: mongo:7.0
+    container_name: phantomshield_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS:-phantompass}
+      MONGO_INITDB_DATABASE: phantomshield
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - phantomnet
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── 2. Redis (rate-limiting counters for detection engine) ──
+  redis:
+    image: redis:7.2-alpine
+    container_name: phantomshield_redis
+    restart: unless-stopped
+    networks:
+      - phantomnet
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── 3. Backend — FastAPI (Members 2 & 8) ───────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: phantomshield_backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MONGO_URI: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASS:-phantompass}@mongodb:27017/phantomshield?authSource=admin
+      DETECTION_ENGINE_URL: http://detection_engine:8001
+      AI_MODULE_URL: http://ai_module:8002
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
+    volumes:
+      - ./backend:/app          # hot-reload in dev
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - phantomnet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ── 4. Detection Engine — FastAPI (Member 5) ───────────────
+  detection_engine:
+    build:
+      context: ./detection-engine
+      dockerfile: Dockerfile
+    container_name: phantomshield_detection
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      SUSPICION_THRESHOLD: ${SUSPICION_THRESHOLD:-70}
+    volumes:
+      - ./detection_engine:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - phantomnet
+
+  # ── 5. AI / ML Module — FastAPI (Member 7) ─────────────────
+  ai_module:
+    build:
+      context: ./ai-module
+      dockerfile: Dockerfile
+    container_name: phantomshield_ai
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./ai_module:/app
+      - ai_models:/app/models   # persist trained models
+    networks:
+      - phantomnet
+
+  # ── 6. Real Frontend — React (Member 3) ────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: phantomshield_frontend
+    restart: unless-stopped
+    networks:
+      - phantomnet
+    # No port exposed — Nginx gateway is the only entry point
+
+  # ── 7. Decoy Frontend — React (Member 4) ───────────────────
+  decoy_frontend:
+    build:
+      context: ./decoy-site
+      dockerfile: Dockerfile
+    container_name: phantomshield_decoy
+    restart: unless-stopped
+    networks:
+      - phantomnet
+
+  # ── 8. Nginx Gateway (Member 6) ────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: phantomshield_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"         # main entry point for the whole app
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+      - decoy_frontend
+      - detection_engine
+      - ai_module
+    networks:
+      - phantomnet
+
+# ─────────────────────────────────────────────────────────────
+#  Volumes
+# ─────────────────────────────────────────────────────────────
+volumes:
+  mongo_data:
+    driver: local
+  ai_models:
+    driver: local
+
+# ─────────────────────────────────────────────────────────────
+#  Networks
+# ─────────────────────────────────────────────────────────────
+networks:
+  phantomnet:
+    driver: bridge
