@@ -27,4 +27,9 @@ export const updateUserProfile = async (email, name, newEmail) => {
   return response.data
 }
 
+export const getTransactions = async () => {
+  const response = await API.get('/transactions')
+  return response.data
+}
+
 export default API
