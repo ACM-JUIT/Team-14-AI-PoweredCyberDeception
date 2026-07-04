@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.middleware.request_inspector import RequestInspectorMiddleware
 
 from app.db.mongodb import (
     connect_to_mongo,
@@ -25,6 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(RequestInspectorMiddleware)
 
 @app.on_event("startup")
 async def startup_event():
