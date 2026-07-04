@@ -43,7 +43,7 @@ async def health_check():
 
 app.include_router(auth.router, prefix="/auth")
 app.include_router(users.router, prefix="/users")
-app.include_router(transactions.router, prefix="/transactions")
+app.include_router(transactions.router, prefix="/api/transactions")
 app.include_router(logs.router, prefix="/logs")
 app.include_router(stats.router, prefix="/stats")
 app.include_router(sessions.router, prefix="/sessions")

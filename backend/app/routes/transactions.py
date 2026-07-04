@@ -12,7 +12,7 @@ class SeedTransactionsRequest(BaseModel):
     email: str
 
 
-@router.get("/")
+@router.get("")
 async def get_transactions(email: str):
     if database is None:
         raise HTTPException(status_code=500, detail="Database not connected")
