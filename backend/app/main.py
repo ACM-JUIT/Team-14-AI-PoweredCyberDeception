@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.middleware.request_inspector import RequestInspectorMiddleware
+from app.middleware.session_tracking import SessionTrackingMiddleware
 
 from app.db.mongodb import (
     connect_to_mongo,
@@ -25,6 +27,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(RequestInspectorMiddleware)
+app.add_middleware(SessionTrackingMiddleware)
 
 @app.on_event("startup")
 async def startup_event():
@@ -43,7 +47,7 @@ async def health_check():
 
 app.include_router(auth.router, prefix="/auth")
 app.include_router(users.router, prefix="/users")
-app.include_router(transactions.router, prefix="/transactions")
+app.include_router(transactions.router, prefix="/api/transactions")
 app.include_router(logs.router, prefix="/logs")
 app.include_router(stats.router, prefix="/stats")
 app.include_router(sessions.router, prefix="/sessions")
