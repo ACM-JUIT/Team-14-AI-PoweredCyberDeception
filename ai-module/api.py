@@ -12,7 +12,9 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "isolation_forest_model.pkl")
 
-model = joblib.load(MODEL_PATH)
+@app.on_event("startup")
+def load_model():
+    app.state.model = joblib.load(MODEL_PATH)
 
 
 class SessionFeatures(BaseModel):
@@ -24,6 +26,7 @@ class SessionFeatures(BaseModel):
 
 @app.post("/score")
 def score_session(session: SessionFeatures):
+    model = app.state.model
 
     features = np.array([[
         session.requests_per_minute,
