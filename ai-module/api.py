@@ -1,20 +1,30 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+import os
+import logging
+from contextlib import asynccontextmanager
+
 import joblib
 import numpy as np
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-app = FastAPI()
+logger = logging.getLogger("uvicorn.error")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.environ.get(
+    "MODEL_PATH",
+    os.path.join(BASE_DIR, "models", "isolation_forest_model.pkl")
+)
 
 
-#load the trained model
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "isolation_forest_model.pkl")
-
-@app.on_event("startup")
-def load_model():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(f"Loading model from {MODEL_PATH} ...")
     app.state.model = joblib.load(MODEL_PATH)
+    logger.info("Model loaded successfully at startup.")
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 class SessionFeatures(BaseModel):
@@ -23,6 +33,12 @@ class SessionFeatures(BaseModel):
     unique_paths: float
     post_get_ratio: float
     suspicious_keywords: float
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "model_loaded": hasattr(app.state, "model")}
+
 
 @app.post("/score")
 def score_session(session: SessionFeatures):
