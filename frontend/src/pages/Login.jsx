@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
@@ -9,6 +10,7 @@ function Login() {
   const [loading, setLoading] = useState(false)
 
   const { login } = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -23,8 +25,10 @@ function Login() {
 
     try {
       const data = await loginUser(email, password)
-      login(data.token, data.user)
-      console.log('Login success:', data)
+      if (data.success) {
+        login(data.email)
+        navigate('/dashboard')
+      }
     } catch (err) {
       if (err.response?.status === 401) {
         setError('Wrong email or password. Please try again.')
