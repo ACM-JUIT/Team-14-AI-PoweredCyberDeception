@@ -1,3 +1,4 @@
+from score_normalizer import normalize_anomaly_score
 import os
 import logging
 from contextlib import asynccontextmanager
@@ -54,8 +55,9 @@ def score_session(session: SessionFeatures):
 
     prediction = model.predict(features)[0]
     anomaly_score = model.decision_function(features)[0]
-
+    risk_score = normalize_anomaly_score(anomaly_score)
     return {
-        "prediction": int(prediction),
-        "anomaly_score": float(anomaly_score)
-    }
+    "prediction": int(prediction),
+    "anomaly_score": float(anomaly_score),
+    "risk_score": risk_score
+}
