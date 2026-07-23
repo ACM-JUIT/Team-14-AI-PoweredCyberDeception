@@ -1,8 +1,6 @@
 def normalize_anomaly_score(anomaly_score: float) -> int:
-    """
-    Convert a raw Isolation Forest anomaly score
-    into a normalized risk score from 0 to 100.
-    """
+    if not isinstance(anomaly_score, (int, float)):
+        raise TypeError("anomaly_score must be a number")
 
     normalized_score = (1 - (anomaly_score + 1) / 2) * 100
 
