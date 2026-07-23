@@ -13,10 +13,8 @@ logger = logging.getLogger("uvicorn.error")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.environ.get(
     "MODEL_PATH",
-    os.path.join(BASE_DIR, "models", "isolation_forest_model.pkl")
+    os.path.join(BASE_DIR, "..", "isolation_forest_model.pkl")
 )
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(f"Loading model from {MODEL_PATH} ...")
