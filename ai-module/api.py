@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 import joblib
 import numpy as np
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -25,15 +25,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+from pydantic import BaseModel, Field
+
 
 class SessionFeatures(BaseModel):
-    requests_per_minute: float
-    failed_logins: float
-    unique_paths: float
-    post_get_ratio: float
-    suspicious_keywords: float
-
-
+    requests_per_minute: float = Field(ge=0)
+    failed_logins: float = Field(ge=0)
+    unique_paths: float = Field(ge=0)
+    post_get_ratio: float = Field(ge=0)
+    suspicious_keywords: float = Field(ge=0, le=1)
 @app.get("/health")
 def health():
     return {"status": "ok", "model_loaded": hasattr(app.state, "model")}
