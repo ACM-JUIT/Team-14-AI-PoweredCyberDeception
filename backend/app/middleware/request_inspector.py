@@ -41,6 +41,17 @@ class RequestInspectorMiddleware(BaseHTTPMiddleware):
             }
 
         request.state.detection_result = detection_result
+score = detection_result.get("final_score", 0)
 
+THRESHOLD = 50
+
+request.state.suspicious = score > THRESHOLD
         response = await call_next(request)
+response.set_cookie(
+    key="phantom_flag",
+    value="suspicious" if request.state.suspicious else "normal",
+    httponly=True,
+    samesite="lax",
+)
+
         return response
