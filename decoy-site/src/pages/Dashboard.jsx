@@ -1,12 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { logAction } from "../utils/logger";
 import { trackAction } from "../utils/behaviorTracker";
+import { getFakeBalance, getFakeTransactions } from "../utils/fakeApi";
 
 function Dashboard() {
+  const [balance, setBalance] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     logAction("VISITED_DASHBOARD");
     trackAction("page_visit", { page: "dashboard" });
+
+    // Fake API calls — looks like real backend is responding
+    getFakeBalance().then((res) => {
+      setBalance(res.data.balance);
+    });
+
+    getFakeTransactions().then((res) => {
+      setTransactions(res.data.slice(0, 3));
+      setLoading(false);
+    });
   }, []);
 
   return (
@@ -24,7 +39,9 @@ function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white p-6 rounded-xl shadow">
               <p className="text-gray-500 text-sm mb-2">Account Balance</p>
-              <p className="text-4xl font-bold text-green-600">$9,999,999.00</p>
+              <p className="text-4xl font-bold text-green-600">
+  {loading ? "Loading..." : `$${balance?.toLocaleString()}.00`}
+</p>
               <p className="text-gray-400 text-xs mt-2">Account ID: SB-2026-00001</p>
               <div className="mt-4 flex gap-3">
                 <button
