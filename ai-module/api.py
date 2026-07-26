@@ -18,10 +18,13 @@ MODEL_PATH = os.environ.get(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(f"Loading model from {MODEL_PATH} ...")
-    app.state.model = joblib.load(MODEL_PATH)
-    logger.info("Model loaded successfully at startup.")
-    yield
 
+    app.state.model = joblib.load(MODEL_PATH)
+
+    logger.info(f"Loaded model parameters: {app.state.model}")
+    logger.info("Model loaded successfully at startup.")
+
+    yield
 
 app = FastAPI(lifespan=lifespan)
 
