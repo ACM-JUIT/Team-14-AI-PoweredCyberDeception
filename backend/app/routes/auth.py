@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.db.mongodb import database
-from app.core.security import verify_password
+from app.core.security import verify_password, create_access_token
 
 router = APIRouter()
 
@@ -14,7 +14,6 @@ class LoginRequest(BaseModel):
 
 @router.post("/login")
 async def login(data: LoginRequest):
-
     if database is None:
         raise HTTPException(status_code=500, detail="Database not connected")
 
@@ -26,8 +25,15 @@ async def login(data: LoginRequest):
     if not verify_password(data.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
+    token = create_access_token(
+        {
+            "sub": user["email"]
+        }
+    )
+
     return {
         "success": True,
         "message": "Login successful",
-        "email": user["email"]
+        "access_token": token,
+        "token_type": "bearer"
     }
