@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from threat_report import ThreatReport
+from chart_generator import generate_attack_bar_chart
 
 # Load secret values from .env file
 load_dotenv()
@@ -24,7 +25,9 @@ sessions_collection = db["sessions"]
 total_sessions = sessions_collection.count_documents({})
 
 # Count how many sessions were redirected to decoy
-total_redirected = sessions_collection.count_documents({"is_redirected_to_decoy": True})
+total_redirected = sessions_collection.count_documents(
+    {"is_redirected_to_decoy": True}
+)
 
 # Count attacks grouped by type
 attack_counts = {}
@@ -40,6 +43,11 @@ print(f"Total sessions: {total_sessions}")
 print(f"Total redirected: {total_redirected}")
 print(f"Attack types found: {list(attack_counts.keys())}")
 
+# ── Generate Chart Image ────────────────────────────────
+
+chart_path = "attack_chart.png"
+generate_attack_bar_chart(attack_counts, output_path=chart_path)
+
 # ── Generate PDF ─────────────────────────────────────────
 
 pdf = ThreatReport()
@@ -48,6 +56,7 @@ pdf.add_page()
 
 pdf.add_report_info()
 pdf.add_summary_section(total_logs, total_sessions, total_redirected)
+pdf.add_chart(chart_path)
 pdf.add_attack_breakdown(attack_counts)
 pdf.add_logs_table(recent_logs)
 
