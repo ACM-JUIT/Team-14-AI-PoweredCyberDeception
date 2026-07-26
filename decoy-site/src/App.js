@@ -15,6 +15,7 @@ function App() {
         <Route path="/transactions" element={<Transactions />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/users" element={<UserList />} />
+        <Route path="*" element={<Login />} />
       </Routes>
     </Router>
   );
