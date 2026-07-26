@@ -1,20 +1,10 @@
+import { DEMO_TRANSACTIONS } from "../utils/demoData";
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { logAction } from "../utils/logger";
 import { trackAction } from "../utils/behaviorTracker";
 
-const allTransactions = [
-  { id: "TXN001", user: "admin@securebank.com", type: "Transfer", amount: "+$50,000", date: "24 Jun 2026", status: "Success", from: "SB-00001", to: "SB-00042" },
-  { id: "TXN002", user: "john.doe@email.com", type: "Withdrawal", amount: "-$12,000", date: "23 Jun 2026", status: "Success", from: "SB-00023", to: "External" },
-  { id: "TXN003", user: "jane.smith@email.com", type: "Deposit", amount: "+$99,999", date: "23 Jun 2026", status: "Pending", from: "External", to: "SB-00045" },
-  { id: "TXN004", user: "robert.brown@email.com", type: "Transfer", amount: "+$5,000", date: "22 Jun 2026", status: "Success", from: "SB-00012", to: "SB-00034" },
-  { id: "TXN005", user: "emily.clark@email.com", type: "Withdrawal", amount: "-$3,500", date: "22 Jun 2026", status: "Failed", from: "SB-00067", to: "External" },
-  { id: "TXN006", user: "admin@securebank.com", type: "Transfer", amount: "+$200,000", date: "21 Jun 2026", status: "Success", from: "SB-00001", to: "SB-00089" },
-  { id: "TXN007", user: "michael.james@email.com", type: "Deposit", amount: "+$15,000", date: "21 Jun 2026", status: "Success", from: "External", to: "SB-00056" },
-  { id: "TXN008", user: "john.doe@email.com", type: "Transfer", amount: "+$8,500", date: "20 Jun 2026", status: "Success", from: "SB-00023", to: "SB-00078" },
-  { id: "TXN009", user: "jane.smith@email.com", type: "Withdrawal", amount: "-$25,000", date: "20 Jun 2026", status: "Failed", from: "SB-00045", to: "External" },
-  { id: "TXN010", user: "admin@securebank.com", type: "Deposit", amount: "+$500,000", date: "19 Jun 2026", status: "Success", from: "External", to: "SB-00001" },
-];
+const allTransactions = DEMO_TRANSACTIONS;
 
 function Transactions() {
   const [filter, setFilter] = useState("All");

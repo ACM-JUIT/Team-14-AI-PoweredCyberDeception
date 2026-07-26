@@ -1,16 +1,10 @@
+import { DEMO_USERS } from "../utils/demoData";
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { logAction } from "../utils/logger";
 import { trackAction } from "../utils/behaviorTracker";
 
-const users = [
-  { id: 1, name: "John Doe", email: "john.doe@email.com", password: "john@1234", balance: "$45,230", role: "User", phone: "+1-555-0101", lastLogin: "24 Jun 2026" },
-  { id: 2, name: "Jane Smith", email: "jane.smith@email.com", password: "jane#5678", balance: "$99,999", role: "User", phone: "+1-555-0102", lastLogin: "23 Jun 2026" },
-  { id: 3, name: "Robert Brown", email: "robert.brown@email.com", password: "rob@9999", balance: "$12,500", role: "User", phone: "+1-555-0103", lastLogin: "22 Jun 2026" },
-  { id: 4, name: "Emily Clark", email: "emily.clark@email.com", password: "emily@333", balance: "$78,000", role: "Manager", phone: "+1-555-0104", lastLogin: "24 Jun 2026" },
-  { id: 5, name: "Michael James", email: "michael.james@email.com", password: "mike#2024", balance: "$200,000", role: "Manager", phone: "+1-555-0105", lastLogin: "21 Jun 2026" },
-  { id: 6, name: "Super Admin", email: "admin@securebank.com", password: "admin@1234", balance: "$9,999,999", role: "Admin", phone: "+1-555-0001", lastLogin: "24 Jun 2026" },
-];
+const users = DEMO_USERS;
 
 function UserList() {
   const [selected, setSelected] = useState(null);
