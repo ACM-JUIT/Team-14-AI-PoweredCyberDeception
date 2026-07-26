@@ -1,6 +1,6 @@
 from fpdf import FPDF
 from datetime import datetime
-
+import os
 
 class ThreatReport(FPDF):
     """
@@ -119,3 +119,19 @@ class ThreatReport(FPDF):
             fill = not fill
 
         self.ln(6)
+        def add_chart(self, chart_path):
+        # Add the bar chart image into the PDF
+        # Only adds it if the image file actually exists
+        if os.path.exists(chart_path):
+            self.set_font("Arial", "B", 13)
+            self.set_text_color(0, 0, 0)
+            self.cell(0, 10, "Attack Distribution Chart", ln=True)
+            self.set_draw_color(200, 0, 0)
+            self.line(10, self.get_y(), 200, self.get_y())
+            self.ln(4)
+            self.image(chart_path, x=10, w=190)
+            self.ln(6)
+        else:
+            self.set_font("Arial", "I", 10)
+            self.set_text_color(128, 128, 128)
+            self.cell(0, 8, "Chart not available — no data found.", ln=True)
