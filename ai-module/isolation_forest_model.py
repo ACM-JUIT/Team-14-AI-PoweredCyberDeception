@@ -20,7 +20,7 @@ X = data[
 print(X.head())
 print(X.shape)
 model = IsolationForest(
-    contamination=0.1,
+    contamination=0.15,
     random_state=42
 )
 model.fit(X)  # train  the model on dataset
